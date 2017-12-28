@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#454750</color>
+    <color name="colorPrimaryDark">#363745</color>
+    <color name="colorAccent">#c7d0e4</color>
+    <color name="colorBackground">#babab4</color>
+    <color name="colorApp">#bdb8e6</color>
+    <color name="color2">#2c314e</color>
+    <color name="primary">#2a2c39</color>
+    <color name="primary_dark">#E12929</color>
+    <color name="primary_darker">#CC1D1D</color>
+    <color name="accent">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="jet">#222222</color>
+    <color name="oil">#333333</color>
+    <color name="monsoon">#777777</color>
+    <color name="jumbo">#888888</color>
+    <color name="aluminum">#999999</color>
+    <color name="base">#AAAAAA</color>
+    <color name="iron">#CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+
+
+    <color name="red">#F6402C</color>
+    <color name="app_color">#060639</color>
+    <color name="purple">#9C1AB1</color>
+    <color name="indigo">#3D4DB7</color>
+    <color name="blue">#1093F5</color>
+    <color name="cyan">#00BBD5</color>
+    <color name="green">#46AF4A</color>
+    <color name="light_green">#88C440</color>
+    <color name="lime">#CCDD1E</color>
+    <color name="yellow">#FFEC16</color>
+    <color name="orange">#d65200</color>
+    <color name="background_main">#caefe2</color>
+</resources>

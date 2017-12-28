@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "77995704847",
+    "firebase_url": "https://kickme-ba6e8.firebaseio.com",
+    "project_id": "kickme-ba6e8",
+    "storage_bucket": "kickme-ba6e8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:77995704847:android:8a892ff7cea23c72",
+        "android_client_info": {
+          "package_name": "com.example.user.kickme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "77995704847-lnrho69dslmjctag5ebvpup5k3sooote.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.user.kickme",
+            "certificate_hash": "c6dfa9a0ed49af2659ac02a2e5cab7717e8be57c"
+          }
+        },
+        {
+          "client_id": "77995704847-7kgi3odg3lau99qgmqee0jljc4sj5nsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC51EfhnhO7fuyBTTi7J0zecbEktzK9Dm4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "77995704847-7kgi3odg3lau99qgmqee0jljc4sj5nsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
