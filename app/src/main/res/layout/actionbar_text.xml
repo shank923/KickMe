@@ -10,10 +10,36 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="KickMe"
+        android:paddingTop="7dp"
         android:textColor="@color/orange"
         android:id="@+id/ab_text"
         android:textStyle = "bold|italic"
         android:fontFamily="serif"
-        android:textSize="30sp" />
+        android:textSize="26sp" />
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:paddingLeft="20dp"
+        android:textColor="@color/primary_darker"
+        android:id="@+id/timer_text"
+        android:textStyle = "bold"
+        android:fontFamily="serif-monospace"
+        android:textSize="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:layout_below="@id/timer_text"
+        android:paddingLeft="32dp"
+        android:textColor="@color/primary_darker"
+        android:id="@+id/timer_text_name"
+        android:textStyle = "bold"
+        android:fontFamily="serif-monospace"
+        android:textSize="13dp" />
 </RelativeLayout>

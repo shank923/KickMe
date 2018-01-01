@@ -30,19 +30,17 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingTop="13dp"
+            android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/fab"
             android:layout_below="@id/list_of_messages"
             android:layout_alignParentBottom="true">
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="#FF8F95A1"
+                android:layout_height="match_parent"
+                android:textColor="#ffffff"
                 android:background="@color/color2"
                 android:layout_alignParentBottom="true"
-                android:paddingTop="17dp"
                 android:id="@+id/input"
                 />
         </android.support.design.widget.TextInputLayout>

@@ -4,8 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
@@ -15,7 +19,9 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -47,7 +53,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<String> surnames = new ArrayList<>();
     LatLng current_user;
     String name;
-    public static int current_index = -1;
+    String victim;
+    SupportMapFragment mapFragment;
+    int current_index;
+    int victim_index;
+
 
     private static final LatLng Baku = new LatLng(40.381601, 49.8499607);
     private static final int BACK_PRESS = 1;
@@ -57,18 +67,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment  = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-       // current_user = new LatLng(latitude.get(current_index), longitude.get(current_index));
-
          coordinates();
-
-
-      //  Log.d("index_maps", String.valueOf(coordinates.get(0)));
-
     }
+
 
     @Override
     public void onBackPressed() {
@@ -84,59 +89,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-
-        mMap.setMinZoomPreference(11.0f);
-        mMap.setMaxZoomPreference(20.0f);
-
-       // coordinates();
-
-
-      //  Log.d("index_maps", String.valueOf(coordinates.get(current_index)));
-
-      /*  current = mMap.addMarker(new MarkerOptions()
-                .position(coordinates.get(0))
-                .title(names.get(current_index) + " " + surnames.get(current_index))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_sentiment_very_dissatisfied_black_24dp))
-        );*/
-
-      /*  ArrayList<MarkerData> markersArray = new ArrayList<MarkerData>();
-
-        for(int i = 0 ; i < markersArray.size() ; i++ ) {
-
-            createMarker(markersArray.get(i).getLatitude(), markersArray.get(i).getLongitude(), markersArray.get(i).getTitle(), markersArray.get(i).getSnippet(), markersArray.get(i).getIconResID());
-        }*/
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(Baku));
+        mMap.setMinZoomPreference(1);
+        mMap.setMaxZoomPreference(100);
     }
 
-   /* protected Marker createMarker(double latitude, double longitude, String title, String snippet, int iconResID) {
-
-        return mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title(title)
-                .snippet(snippet);
-            .icon(BitmapDescriptorFactory.fromResource(iconResID)));
-    }*/
 
 
     public void coordinates()
     {
         //Get datasnapshot at your "users" root node
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("user");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
-                        name = dataSnapshot.child(mAuth.getCurrentUser().getUid()).child("nameS").getValue(String.class);
-                        collectPhoneNumbers((Map<String,Object>) dataSnapshot.getValue());
-                        current = mMap.addMarker(new MarkerOptions()
-                                .position(coordinates.get(0))
-                                .title(names.get(current_index) + " " + surnames.get(current_index))
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_sentiment_very_dissatisfied_black_24dp))
-                        );
+                        victim = dataSnapshot.child("timercount").child("victim").getValue(String.class);
+                        name = dataSnapshot.child("user").child(mAuth.getCurrentUser().getUid()).child("nameS").getValue(String.class);
+
+
+
+                        collectPhoneNumbers((Map<String,Object>) dataSnapshot.child("user").getValue());
+
+                        for(int i = 0; i < coordinates.size(); i ++)
+                        {
+                            if(i == current_index) {
+                                current = mMap.addMarker(new MarkerOptions()
+                                        .position(coordinates.get(current_index))
+                                        .title(names.get(current_index) + " " + surnames.get(current_index))
+                                        .icon(bitmapDescriptorFromVector(MapsActivity.this, R.drawable.ic_room_black_24dp))
+                                );
+
+                                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(coordinates.get(current_index), 17));
+                            }
+
+                            else if (i == victim_index) {
+                                current = mMap.addMarker(new MarkerOptions()
+                                        .position(coordinates.get(victim_index))
+                                        .title(names.get(victim_index) + " " + surnames.get(victim_index))
+                                        .icon(bitmapDescriptorFromVector(MapsActivity.this, R.drawable.ic_sentiment_very_dissatisfied_black_24dp))
+                                );
+
+                            }
+                                else
+                                {
+                                    current = mMap.addMarker(new MarkerOptions()
+                                            .position(coordinates.get(i))
+                                            .title(names.get(i) + " " + surnames.get(i))
+                                            .icon(bitmapDescriptorFromVector(MapsActivity.this, R.drawable.ic_sentiment_very_satisfied_black_24dp))
+                                    );
+
+                                }
+
+
+                        }
 
                     }
 
@@ -162,5 +169,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         current_index = names.indexOf(name);
+        victim_index = names.indexOf(victim.substring(0, victim.lastIndexOf(' ')));
+
     }
+
+
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
+}

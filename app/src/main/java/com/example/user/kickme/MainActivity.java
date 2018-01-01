@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -65,6 +67,11 @@ import org.jsoup.select.Elements;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import static android.media.MediaExtractor.MetricsConstants.FORMAT;
 
 public class MainActivity extends AppCompatActivity  implements ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -82,8 +89,16 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
     EditText input;
     public String name;
     public String surname;
+    String  punishment, victim;
+    long time;
     TextView textName;
+    TextView timer_text;
+    TextView timer_text_name;
     TextView textSurname;
+    Menu currentmenu;
+    private Handler handler;
+    private Runnable runnable;
+    long distance = 1;
     private BroadcastReceiver _refreshReceiver = new MyReceiver();
 
 
@@ -110,7 +125,9 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
 
         displayChatMessages();
 
-        getWebsite();
+        dataBaseTimer();
+
+        dataBaseName();
 
         startService(new Intent(this, LocationService.class)); //background gps
 
@@ -175,6 +192,9 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
         // Inflate the menu; this adds items to the action bar if it is present.
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_text);
+        timer_text = (TextView)findViewById(R.id.timer_text) ;
+        timer_text_name = (TextView)findViewById(R.id.timer_text_name);
+        currentmenu = menu;
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -220,7 +240,7 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
         // Check if user is signed in (non-null) and update UI accordingly.
 
         if (user != null) {
-            DatabaseReference refname = FirebaseDatabase.getInstance().getReference();
+            final DatabaseReference refname = FirebaseDatabase.getInstance().getReference();
             refname.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
@@ -229,13 +249,8 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
                         surname = snapshot.child("user").child(mAuth.getCurrentUser().getUid()).child("surnameS").getValue(String.class);
 
 
-                        Log.d("current_name", name);
-                        //Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                      //  intent.putExtra("NameSurname", name);
-                      //  startActivity(intent);
-
-                    //    textName.setText(name);
-                    //    textSurname.setText(surname);
+                        Log.d("current_nameee", name);
+                        refname.removeEventListener(this);
                     }
                 }
 
@@ -247,11 +262,63 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
         }
     }
 
+
+    public void dataBaseTimer()
+    {
+
+        final DatabaseReference refname = FirebaseDatabase.getInstance().getReference();
+        refname.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                time = snapshot.child("timercount").child("time").getValue(Long.class);
+
+                Log.d("timeWEBDATABASE", String.valueOf(time));
+
+                refname.removeEventListener(this);
+
+                countDownStart();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("Read failed", firebaseError.getMessage());
+            }
+        });
+    }
+
+    public void dataBaseName()
+    {
+
+        final DatabaseReference refname = FirebaseDatabase.getInstance().getReference();
+        refname.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                punishment = snapshot.child("timercount").child("punishment").getValue(String.class);
+                victim = snapshot.child("timercount").child("victim").getValue(String.class);
+
+                currentmenu.findItem(R.id.map_button).setVisible(true);
+
+
+                timer_text_name.setText(victim + '\n' + punishment);
+
+                refname.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("Read failed", firebaseError.getMessage());
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.map_button:
-                //FirebaseAuth.getInstance().signOut();
+               // FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivityForResult(intent, MAP_SUCCESS);
                 finish();
@@ -268,29 +335,23 @@ public class MainActivity extends AppCompatActivity  implements ActivityCompat.O
 
 
 
-    private void getWebsite() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final StringBuilder builder = new StringBuilder();
-                try {
-                    Document doc = Jsoup.connect("https://kickme-ba6e8.firebaseapp.com").get();
-                    Element links = doc.getElementById("fb");
+        public void countDownStart() {
+            new CountDownTimer(time, 1000) { // adjust the milli seconds here
 
-                    Log.i("WEBSITE",links.toString());
+                public void onTick(long millisUntilFinished) {
 
-                } catch (IOException e) {
-                    builder.append("Error : ").append(e.getMessage()).append("\n");
+                    long hours = (long)Math.floor((millisUntilFinished % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    long minutes = (long)Math.floor((millisUntilFinished % (1000 * 60 * 60)) / (1000 * 60));
+                    long seconds = (long)Math.floor((millisUntilFinished % (1000 * 60)) / 1000);
+
+                    timer_text.setText(String.valueOf(hours) + ':' + String.valueOf(minutes) + ':' + String.valueOf(seconds));
                 }
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                      //  Log.i("WEBSITE",builder.toString());
-                    }
-                });
-            }
-        }).start();
-    }
+                public void onFinish() {
+                    dataBaseTimer();
+                    dataBaseName();
+                }
+            }.start();
 
+        }
 }

@@ -99,30 +99,36 @@ public class LoginActivity extends Activity {
                     "Location permission has already been granted.");
         }
 
-      //  if(isLocationEnabled(LoginActivity.this))location_flag = true;
+        if(!internet_connection()){
+            Toast.makeText(getBaseContext(), "You have no internet connection, dude", Toast.LENGTH_SHORT).show();
+        }
 
-        mAuth = FirebaseAuth.getInstance();
+        if (!isLocationEnabled(LoginActivity.this)) {
+            Toast.makeText(getBaseContext(), "Please, turn on your location, pussy", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent);
+        }
 
-        //auto login
-        if (mAuth.getCurrentUser() != null) {
+        else {
+            mAuth = FirebaseAuth.getInstance();
 
-            if(!isLocationEnabled(LoginActivity.this))
-            {
-                Log.d("LOGIN ACTIVITY", "ONCREATELOCATION");
-                Toast.makeText(getBaseContext(), "Please, turn on your location, pussy", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            }
+            //auto login
+            if (mAuth.getCurrentUser() != null) {
 
-            if(!internet_connection()) {
-                Toast.makeText(this, "You have no internet connection, dude", Toast.LENGTH_LONG).show();
-            }
-            else {
-                Log.d("LOGIN ACTIVITY", "ONCREATELOGION");
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivityForResult(intent, LOGIN_SUCCESS);
-                finish();
-                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                if (!isLocationEnabled(LoginActivity.this)) {
+                    Toast.makeText(getBaseContext(), "Please, turn on your location, pussy", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent);
+                }
+
+                if (!internet_connection()) {
+                    Toast.makeText(this, "You have no internet connection, dude", Toast.LENGTH_LONG).show();
+                } else {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivityForResult(intent, LOGIN_SUCCESS);
+                    finish();
+                    overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+                }
             }
         }
 
@@ -162,9 +168,9 @@ public class LoginActivity extends Activity {
     public void onResume(){
         super.onResume();
         if(isLocationEnabled(LoginActivity.this)){
+            mAuth = FirebaseAuth.getInstance();
             if (mAuth.getCurrentUser() != null)
             {
-                Log.d("LOGIN ACTIVITY", "ONRESUMELOCATION");
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 startActivityForResult(intent, LOGIN_SUCCESS);
                 finish();
@@ -173,14 +179,6 @@ public class LoginActivity extends Activity {
             }
 
         }
-
-        else
-        {
-            Toast.makeText(getBaseContext(), "Please, turn on your location, pussy", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        }
-
     }
 
 
@@ -198,18 +196,6 @@ public class LoginActivity extends Activity {
 
 
     private void login(){
-
-        if(!internet_connection()){
-            Toast.makeText(getBaseContext(), "You have no internet connection, dude", Toast.LENGTH_SHORT).show();
-        }
-
-        if (!isLocationEnabled(LoginActivity.this)) {
-            Toast.makeText(getBaseContext(), "Please, turn on your location, pussy", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-            startActivity(intent);
-        }
-
-        else {
             mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -230,7 +216,6 @@ public class LoginActivity extends Activity {
 
                         }
                     });
-        }
     }
     private void onLoginFailed() {
         Toast.makeText(getBaseContext(), "login failed", Toast.LENGTH_LONG).show();

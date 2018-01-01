@@ -13,6 +13,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,6 +49,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener{
     FirebaseDatabase firebaseDatabase;
     DatabaseReference firebaseReference;
     FirebaseAuth.AuthStateListener mAuthListener;
+    CheckBox checker;
 
 
     Button register;
@@ -67,6 +70,7 @@ public class SignUpActivity extends Activity implements View.OnClickListener{
         email = findViewById(R.id.input_email);
         password = findViewById(R.id.input_password);
         register = findViewById(R.id.btn_signup);
+        checker = findViewById(R.id.checkboxagree);
 
 
 
@@ -93,6 +97,29 @@ public class SignUpActivity extends Activity implements View.OnClickListener{
         };
         mAuth.addAuthStateListener(mAuthListener);
         register.setOnClickListener(this);
+
+
+
+
+        checker.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked)
+            {
+                if ( isChecked )
+                {
+                   register.setVisibility(View.VISIBLE);
+                }
+
+                else
+                {
+                    register.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+
+
     }
 
 
